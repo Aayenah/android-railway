@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Hackathon</string>
     <string name="findNearbyStations">Find Nearby Stations</string>
-    <string name="showMap">Show Map</string>
+    <string name="showMap">Show in Map</string>
+    <string name="mapBoxAccessToken">pk.eyJ1IjoiY2FzY2FkYWFhIiwiYSI6ImNrOGhrbnlrdDAxZnQzc3M1Y3AxYXFsamwifQ.p06VEWZ_xLkeNjGQiyBhdg</string>
 </resources>
