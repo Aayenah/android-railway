@@ -19,26 +19,25 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="false"
         android:layout_margin="8dp"
-        android:onClick="onClick"
+        android:onClick="find_onClick"
         android:text="@string/findNearbyStations" />
 
-    <TextView
-        android:id="@+id/latText"
+    <Button
+        android:id="@+id/buttonMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/buttonFind"
         android:layout_alignBaseline="@id/buttonFind"
-        android:layout_toEndOf="@id/lngText"
-        android:layout_margin="8dp"
-        android:text="lat"/>
+        android:text="@string/showMap"
+        />
 
     <TextView
-        android:id="@+id/lngText"
+        android:id="@+id/currentLocationText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/buttonFind"
-        android:layout_toEndOf="@id/buttonFind"
-        android:layout_margin="8dp"
-        android:text="lng"/>
+        android:layout_alignBaseline="@id/buttonMap"
+        android:layout_toEndOf="@id/buttonMap"
+        android:layout_margin="8dp"/>
 
 
 </RelativeLayout>

@@ -37,6 +37,10 @@ public class Station {
         this.lng = lng;
     }
 
+    public String getCoordinates(){
+        return lat+", "+lng;
+    }
+
     public double getDistanceToUser() {
         return distanceToUser;
     }

@@ -8,6 +8,8 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -41,19 +43,20 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
     ListView locationsList;
-    private ArrayList<String> listItems = new ArrayList<String>();
-    private ArrayList<JSONObject> objectList = new ArrayList<JSONObject>();
     private ArrayList<Station> stationList = new ArrayList<>();
     private String urlString = "";
     private double lat, lng;
-    private TextView latText, lngText;
+    private TextView currentLocationText;
 
     private final double K = 6372.8; //kilometers
     private DecimalFormat df = new DecimalFormat("#.##");
+    private DecimalFormat df4 = new DecimalFormat("#.####");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +75,10 @@ public class MainActivity extends AppCompatActivity {
         lat = 0;
         lng = 0;
 
-        latText = findViewById(R.id.latText);
-        lngText = findViewById(R.id.lngText);
+        currentLocationText = findViewById(R.id.currentLocationText);
 
         locationPermission();
         locationsList = findViewById(R.id.locationsList);
-
     }
 
 
@@ -115,14 +116,22 @@ public class MainActivity extends AppCompatActivity {
             System.exit(0);
         }
         else{
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+            try {
+                List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     lat = location.getLatitude();
                     lng = location.getLongitude();
-                    latText.setText("Lat: "+lat);
-                    lngText.setText("Lng: "+lng);
+                    currentLocationText.setText(df4.format(lat)+", "+df4.format(lng));
+                    //getActionBar().setTitle(currentLocationText.getText());
                 }
 
                 @Override
@@ -144,8 +153,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void onClick(View v){
-        listItems.clear();
+    public void find_onClick(View v){
         stationList.clear();
         locationPermission();
         urlString = "http://10.0.2.2:8080/stations?lat="+lat+"&lng="+lng;
@@ -155,10 +163,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void showToast(String message){
         Context context = getApplicationContext();
-        CharSequence text = message;
         int duration = Toast.LENGTH_SHORT;
 
-        Toast toast = Toast.makeText(context, text,  duration);
+        Toast toast = Toast.makeText(context, message,  duration);
         toast.show();
     }
 
@@ -180,16 +187,15 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("DISTANCE: "+df.format(st.getDistanceToUser()));
             }
 
-            ArrayAdapter<String> a = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_2, android.R.id.text1, listItems) {
+            ArrayAdapter<Station> a = new ArrayAdapter<Station>(MainActivity.this, android.R.layout.simple_list_item_2, android.R.id.text1, stationList) {
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
                     View v = super.getView(position, convertView, parent);
                     TextView text1 = v.findViewById(android.R.id.text1);
                     TextView text2 = v.findViewById(android.R.id.text2);
 
-                    text1.setText(stationList.get(position).getName());
-                    text2.setText(df.format(stationList.get(position).getDistanceToUser())+"");
-
+                    text1.setText(stationList.get(position).getName()+"\t\t\t - \t\t\t"+df.format(stationList.get(position).getDistanceToUser())+"km away");
+                    text2.setText(stationList.get(position).getCoordinates());
 
                     return v;
                 }
@@ -213,8 +219,6 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray ja = new JSONArray(line);
                     for (int i = 0; i < ja.length(); i++){
                         JSONObject jo = (JSONObject) ja.get(i);
-                        listItems.add(jo.getString("StationName"));
-                        objectList.add(jo);
                         Station s = new Station(jo.getString("StationName"), jo.getDouble("Latitude"), jo.getDouble("Longitude"));
                         stationList.add(s);
                     }

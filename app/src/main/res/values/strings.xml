@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Hackathon</string>
-    <string name="findNearbyStations">Find</string>
+    <string name="findNearbyStations">Find Nearby Stations</string>
+    <string name="showMap">Show Map</string>
 </resources>
